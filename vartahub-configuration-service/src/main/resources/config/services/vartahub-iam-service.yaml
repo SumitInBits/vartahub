@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: vartahub-iam-service
+
+  config:
+    import: classpath:config/global/application.yaml
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/iam
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+keycloak:
+  server-url: http://localhost:8090
+  realm: vartahub
+  client-id: vartahub
+  client-secret: pqIwdXDuuC0yCrrlfqwYYwt7Vvw73GCxBdkYO0UNw5VQAyTttAo0POS9z4azgHy0qF6pra4DftfOh0eFDFkwdO
+server:
+  port: 9001

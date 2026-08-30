@@ -1,0 +1,12 @@
+spring:
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    username: vartahub
+    password: vartahub
+
+  logging:
+  level:
+    root: INFO

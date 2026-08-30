@@ -1,0 +1,23 @@
+info:
+  name: CreateSpecialisation
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:9001/api/v1/iam/specialisation
+  body:
+    type: json
+    data: |
+      {
+        "name": "Medical",
+        "parentId": null
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

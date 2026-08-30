@@ -66,9 +66,9 @@ logs/
 *.bak
 *.orig
 
-.env
-.env.*
-!.env.example
+deploy/local/.env
+deploy/local/.env.example
+!deploy/local/.env.example
 !.env.template
 
 *.pem

@@ -1,0 +1,40 @@
+info:
+  name: CreateUser
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:9001/api/v1/iam/users
+  body:
+    type: json
+    data: |-
+      {
+        "firstName": "Sumit",
+        "lastName": "Kumar",
+        "email": "sumit@example.com",
+        "username": "sumit",
+        "password": "StrongPassword123!",
+        "specialisations": [
+          {
+            "id": "8f1fb65a-5b3c-49e5-94e7-c12eaa7f0cd4",
+            "proficiencyLevel": 4
+          },
+          {
+            "id": "8d4807cb-cb03-4bb2-b9e3-f26dc76b311b",
+            "proficiencyLevel": 3
+          }
+        ],
+        "experience": "EXPERIENCED",
+        "role": "USER",
+        "experienceYears": 3,
+        "organizationName": "Vartahub"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
