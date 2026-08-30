@@ -10,10 +10,8 @@ http:
     type: json
     data: |
       {
-        "name": "Medical",
-        "parentId": null
+        "name": "Java"
       }
-  auth: inherit
 
 settings:
   encodeUrl: true

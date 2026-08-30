@@ -2,6 +2,7 @@ package com.sumitinbits.iam.securitycore.config;
 
 import com.sumitinbits.iam.securitycore.converter.JwtAuthenticationConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,12 +24,13 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 @Import({JwtAuthenticationConverter.class})
+@Slf4j
 public class SecurityConfig {
     private final JwtAuthenticationConverter authenticationConverter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-
+        log.info("Service security applied success!");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())

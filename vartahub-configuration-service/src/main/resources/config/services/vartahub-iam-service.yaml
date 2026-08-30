@@ -16,5 +16,6 @@ keycloak:
   realm: vartahub
   client-id: vartahub
   client-secret: pqIwdXDuuC0yCrrlfqwYYwt7Vvw73GCxBdkYO0UNw5VQAyTttAo0POS9z4azgHy0qF6pra4DftfOh0eFDFkwdO
+
 server:
   port: 9001

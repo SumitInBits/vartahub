@@ -14,11 +14,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>security-core</artifactId>
+    <artifactId>vartahub-iam-service</artifactId>
 
     <packaging>pom</packaging>
 
-    <name>Common Shared Security</name>
+    <name>VartaHub Iam Service</name>
 
     <modules>
         <module>api</module>

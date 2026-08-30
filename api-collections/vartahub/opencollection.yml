@@ -2,6 +2,37 @@ opencollection: 1.0.0
 
 info:
   name: vartahub
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: oauth2
+    flow: authorization_code
+    authorizationUrl: http://localhost:8090/realms/vartahub/protocol/openid-connect/auth
+    accessTokenUrl: http://localhost:8090/realms/vartahub/protocol/openid-connect/token
+    credentials:
+      clientId: vartahub-ui
+      placement: basic_auth_header
+    scope: openid profile email
+    pkce: {}
+    tokenConfig:
+      id: credentials
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: true
+      autoRefreshToken: false
 bundled: false
 extensions:
   bruno:

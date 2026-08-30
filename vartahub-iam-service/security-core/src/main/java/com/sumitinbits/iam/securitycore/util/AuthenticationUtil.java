@@ -1,6 +1,6 @@
 package com.sumitinbits.iam.securitycore.util;
 
-import com.sumitinbits.iam.app.security.AuthenticatedUser;
+import com.sumitinbits.iam.api.security.AuthenticatedUser;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

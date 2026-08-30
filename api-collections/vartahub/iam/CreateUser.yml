@@ -17,12 +17,8 @@ http:
         "password": "StrongPassword123!",
         "specialisations": [
           {
-            "id": "8f1fb65a-5b3c-49e5-94e7-c12eaa7f0cd4",
+            "specialisationId": "02040f84-d72f-4209-b380-6fb24d257182",
             "proficiencyLevel": 4
-          },
-          {
-            "id": "8d4807cb-cb03-4bb2-b9e3-f26dc76b311b",
-            "proficiencyLevel": 3
           }
         ],
         "experience": "EXPERIENCED",
