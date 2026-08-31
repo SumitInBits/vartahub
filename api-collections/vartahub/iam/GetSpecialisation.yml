@@ -6,7 +6,6 @@ info:
 http:
   method: GET
   url: http://localhost:9001/api/v1/iam/specialisation
-  auth: inherit
 
 settings:
   encodeUrl: true

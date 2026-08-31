@@ -12,12 +12,17 @@ http:
       {
         "firstName": "Sumit",
         "lastName": "Kumar",
-        "email": "sumit@example.com",
-        "username": "sumit",
-        "password": "StrongPassword123!",
+        "email": "sumit3@gmail.com",
+        "username": "sumit3",
+        "password": "sumit123",
         "specialisations": [
           {
-            "specialisationId": "02040f84-d72f-4209-b380-6fb24d257182",
+            "specialisationId": "49e56501-5123-4545-baad-d739d3996790",
+            "proficiencyLevel": 4
+          },
+          
+              {
+            "specialisationId": "d61f359a-e9e3-4932-8c38-b4a2c14f5390",
             "proficiencyLevel": 4
           }
         ],
@@ -26,7 +31,6 @@ http:
         "experienceYears": 3,
         "organizationName": "Vartahub"
       }
-  auth: inherit
 
 settings:
   encodeUrl: true

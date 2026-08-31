@@ -12,7 +12,3 @@ spring:
   datasource:
     username: vartahub
     password: vartahub
-
-logging:
-  level:
-    org.springframework.security: DEBUG
