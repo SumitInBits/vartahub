@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "identityProviderId", ignore = true)
+    @Mapping(target = "identityId", ignore = true)
     @Mapping(target = "profilePhotoKey", ignore = true)
     @Mapping(target = "userSpecialisations", ignore = true)
     UserDbo toDbo(UserRequest userRequest);

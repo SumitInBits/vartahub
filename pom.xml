@@ -32,6 +32,8 @@
         <module>vartahub-meeting-service</module>
         <module>varthub-gateway-server</module>
         <module>vartahub-commons</module>
+        <module>vartahub-meeting-service/api</module>
+        <module>vartahub-meeting-service/app</module>
     </modules>
 
     <dependencyManagement>

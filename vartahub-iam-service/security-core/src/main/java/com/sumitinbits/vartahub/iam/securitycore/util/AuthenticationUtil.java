@@ -19,7 +19,7 @@ public class AuthenticationUtil {
         }
 
         Jwt token = jwtAuthentication.getToken();
-        UUID identifyProviderId = UUID.fromString(Objects.requireNonNull(token.getSubject()));
-        return new AuthenticatedUser(identifyProviderId);
+        UUID identifyId = UUID.fromString(Objects.requireNonNull(token.getSubject()));
+        return new AuthenticatedUser(identifyId);
     }
 }

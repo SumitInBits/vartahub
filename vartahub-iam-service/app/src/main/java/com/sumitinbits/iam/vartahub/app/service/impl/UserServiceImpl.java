@@ -5,7 +5,7 @@ import com.sumitinbits.iam.vartahub.app.model.SpecialisationDbo;
 import com.sumitinbits.iam.vartahub.app.model.UserDbo;
 import com.sumitinbits.iam.vartahub.app.model.UserSpecialisationDbo;
 import com.sumitinbits.iam.vartahub.app.repository.UserRepository;
-import com.sumitinbits.iam.vartahub.app.service.IdentityProviderService;
+import com.sumitinbits.iam.vartahub.app.service.IdentityService;
 import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
 import com.sumitinbits.iam.vartahub.app.service.UserService;
 import com.sumitinbits.vartahub.commons.exception.OperationNotPermitted;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final SpecialisationService specialisationService;
-    private final IdentityProviderService identityProviderService;
+    private final IdentityService identityService;
 
     @Override
     @Transactional
@@ -61,9 +61,9 @@ public class UserServiceImpl implements UserService {
                         userSpecialisation.proficiency()
                 )).toList();
 
-        UUID identityProviderId = identityProviderService.createUser(userRequest, roles);
+        UUID identityId = identityService.createUser(userRequest, roles);
         userDbo.setUserSpecialisations(userSpecialisations);
-        userDbo.setIdentityProviderId(identityProviderId);
+        userDbo.setIdentityId(identityId);
         return userRepository.save(userDbo).getId();
     }
 
@@ -76,9 +76,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser() {
-        UUID identityProviderId = AuthenticationUtil.getAuthenticatedUser().identityProviderId();
-        UserDbo userDbo = userRepository.findByIdentityProviderId(identityProviderId)
-                .orElseThrow(() -> new ResourceNotFound("User Not Found from Identity Provider " + identityProviderId));
+        UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
+        UserDbo userDbo = userRepository.findByIdentityId(identityId)
+                .orElseThrow(() -> new ResourceNotFound("User Not Found from Identity Provider " + identityId));
 
         return userMapper.toDto(userDbo);
     }

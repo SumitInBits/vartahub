@@ -2,11 +2,8 @@ spring:
   application:
     name: vartahub-iam-service
 
-  config:
-    import: classpath:config/global/application.yaml
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/iam
+    url: jdbc:postgresql://localhost:5434/iam
   jpa:
     hibernate:
       ddl-auto: update

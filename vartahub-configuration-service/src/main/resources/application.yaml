@@ -1,8 +1,10 @@
 spring:
   application:
     name: vartahub-configuration-service
+
   profiles:
     active: native
+
   cloud:
     config:
       server:
@@ -11,7 +13,5 @@ spring:
             - classpath:/config/global
             - classpath:/config/services
 
-
 server:
   port: 8888
-

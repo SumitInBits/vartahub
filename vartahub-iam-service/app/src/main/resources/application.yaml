@@ -1,6 +1,7 @@
 spring:
   application:
     name: vartahub-iam-service
+
   config:
-    import: configserver:http://localhost:8888/
+    import: configserver:http://localhost:8888
 

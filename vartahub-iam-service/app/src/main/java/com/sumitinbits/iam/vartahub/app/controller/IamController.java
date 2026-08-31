@@ -24,13 +24,13 @@ public class IamController {
     private final UserService userService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/specialisation")
+    @PostMapping("/specialisations")
     public UUID createSpecialisation(@Valid @RequestBody SpecialisationRequest specialisationRequest) {
         log.info("API: create specialisation {}", specialisationRequest);
         return specialisationService.createSpecialisation(specialisationRequest);
     }
 
-    @GetMapping("/specialisation")
+    @GetMapping("/specialisations")
     public List<SpecialisationDto> getSpecialisations() {
         log.info("API: get specialisations");
         return specialisationService.getSpecialisations();

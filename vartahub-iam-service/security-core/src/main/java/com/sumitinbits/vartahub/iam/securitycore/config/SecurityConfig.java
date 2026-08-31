@@ -30,7 +30,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        log.info("Service security applied success!");
+        log.info("Service security applied success!!!");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
@@ -62,7 +62,7 @@ public class SecurityConfig {
         return new String[]{
                 "/actuator/health",
                 "/actuator/info",
-                "/api/v1/iam/specialisation"
+                "/api/v1/iam/specialisations"
         };
     }
 

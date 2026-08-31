@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: vartahub-meeting-service
+
+  data:
+    redis:
+      url: redis://:vartahub@localhost:6379
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/meeting
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 9002
