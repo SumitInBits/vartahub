@@ -27,7 +27,7 @@
         <module>vartahub-iam-service</module>
         <module>vartahub-discovery-service</module>
         <module>vartahub-meeting-service</module>
-        <module>varthub-gateway-server</module>
+        <module>vartahub-gateway-server</module>
         <module>vartahub-commons</module>
     </modules>
 

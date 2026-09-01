@@ -1,27 +1,22 @@
 spring:
-    application:
-      name: varthub-gateway-server
+  application:
+    name: vartahub-gateway-server
 
-    cloud:
-      gateway:
-        server:
-          webmvc:
-            discovery:
-              locator:
-                enabled: true
-                lower-case-service-id: true
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: varthub-meeting-service
+              uri: lb://vartahub-meeting-service
+              predicates:
+                - Path=/api/vartahub/meeting/**
+              filters:
+                - RewritePath=/api/vartahub/meeting/(?<version>v[0-9]+)/(?<segment>.*), /api/$\{version}/meeting/$\{segment}
 
-            routes:
-              - id: varthub-meeting-service
-                uri: lb://varthub-meeting-service
-                predicates:
-                  - Path=/api/vartahub/meeting/**
-                filters:
-                  - RewritePath=/api/vartahub/meeting/(?<version>v[0-9]+)/(?<segment>.*), /api/$\{version}/meeting/$\{segment}
-
-              - id: varthub-iam-service
-                uri: lb://varthub-iam-service
-                predicates:
-                  - Path=/api/vartahub/iam/**
-                filters:
-                  - RewritePath=/api/vartahub/iam/(?<version>v[0-9]+)/(?<segment>.*), /api/$\{version}/iam/$\{segment}
+            - id: varthub-iam-service
+              uri: lb://vartahub-iam-service
+              predicates:
+                - Path=/api/vartahub/iam/**
+              filters:
+                - RewritePath=/api/vartahub/iam/(?<version>v[0-9]+)/(?<segment>.*), /api/$\{version}/iam/$\{segment}

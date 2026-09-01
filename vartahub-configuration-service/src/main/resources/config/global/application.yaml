@@ -22,11 +22,3 @@ eureka:
     fetchRegistry: true
   instance:
     prefer-ip-address: true
-
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.cloud.gateway.server.mvc: TRACE
-    org.springframework.security: DEBUG
-    org.springframework.web.servlet.mvc.method.annotation: DEBUG
