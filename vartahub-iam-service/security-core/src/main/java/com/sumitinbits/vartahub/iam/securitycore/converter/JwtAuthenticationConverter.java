@@ -2,6 +2,7 @@ package com.sumitinbits.vartahub.iam.securitycore.converter;
 
 import com.sumitinbits.vartahub.iam.securitycore.validator.JwtValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
@@ -20,12 +21,13 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @Import({JwtValidator.class})
+@Slf4j
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
-    private final JwtValidator jwtValidator;
+    private final JwtValidator validator;
 
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
-        jwtValidator.validate(jwt);
+        validator.validate(jwt);
         return new JwtAuthenticationToken(
                 jwt,
                 extractAuthorities(jwt),

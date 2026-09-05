@@ -30,7 +30,7 @@ public class MeetingDbo extends BaseEntity {
     @Column(nullable = false)
     private Instant endDate;
 
-    @Column( nullable = false)
+    @Column(nullable = false)
     private UUID specialisationId;
 
     @Enumerated(EnumType.STRING)

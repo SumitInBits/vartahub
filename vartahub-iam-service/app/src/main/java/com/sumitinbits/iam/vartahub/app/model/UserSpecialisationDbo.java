@@ -26,17 +26,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserSpecialisationDbo extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "user_id",
-            nullable = false
-    )
+    @JoinColumn(name = "user_id", nullable = false)
     private UserDbo user;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(
-            name = "specialisation_id",
-            nullable = false
-    )
+    @JoinColumn(name = "specialisation_id", nullable = false)
     private SpecialisationDbo specialisation;
 
     @Enumerated(EnumType.STRING)

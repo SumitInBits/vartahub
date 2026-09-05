@@ -12,7 +12,7 @@ keycloak:
   server-url: http://localhost:8090
   realm: vartahub
   client-id: vartahub
-  client-secret: pqIwdXDuuC0yCrrlfqwYYwt7Vvw73GCxBdkYO0UNw5VQAyTttAo0POS9z4azgHy0qF6pra4DftfOh0eFDFkwdO
+  client-secret: 1FubevGE7O5odFBztbjmDtX6BOWgzydO50lr5HcamIS1SYqVbIqMzh4wkLqt1yGkJH6ppg3cSQdBbvICYSWJsK
 
 server:
   port: 9001
