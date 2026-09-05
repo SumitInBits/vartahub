@@ -28,7 +28,6 @@ public class GatewaySecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.GET, getPublicEndpoints()).permitAll()
-                        .pathMatchers(HttpMethod.POST, postPublicEndpoints()).permitAll()
                         .pathMatchers("/api/vartahub/*/*/private/**").denyAll()
                         .pathMatchers("/api/vartahub/*/**").authenticated()
                         .anyExchange().denyAll()
@@ -53,12 +52,6 @@ public class GatewaySecurityConfig {
     private String[] getPublicEndpoints() {
         return new String[]{
                 "/api/vartahub/iam/v1/specialisations"
-        };
-    }
-
-    private String[] postPublicEndpoints() {
-        return new String[]{
-                "/api/vartahub/iam/v1/users"
         };
     }
 }

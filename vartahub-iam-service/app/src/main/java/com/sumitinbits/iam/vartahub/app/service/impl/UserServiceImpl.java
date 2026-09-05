@@ -10,19 +10,18 @@ import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
 import com.sumitinbits.iam.vartahub.app.service.UserService;
 import com.sumitinbits.vartahub.commons.exception.OperationNotPermitted;
 import com.sumitinbits.vartahub.commons.exception.ResourceNotFound;
+import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
-import com.sumitinbits.vartahub.iam.api.dto.UserRequest;
 import com.sumitinbits.vartahub.iam.api.dto.UserSpecialisationRequest;
+import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
 import com.sumitinbits.vartahub.iam.securitycore.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,10 +36,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UUID createUser(UserRequest userRequest) {
-        List<Role> roles = getRoles(userRequest.role());
+    public UUID completeCreateUser(CompleteCreateUserRequest completeCreateUserRequest) {
+        List<Role> roles = getRoles(completeCreateUserRequest.role());
 
-        Set<UUID> requestSpecialisationIds = userRequest.specialisations().stream()
+        Set<UUID> requestSpecialisationIds = completeCreateUserRequest.specialisations().stream()
                 .map(UserSpecialisationRequest::specialisationId)
                 .collect(Collectors.toSet());
 
@@ -52,16 +51,18 @@ public class UserServiceImpl implements UserService {
             throw new OperationNotPermitted("Some specialisations not found");
         }
 
-        UserDbo userDbo = userMapper.toDbo(userRequest);
+        UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
+        UserDbo userDbo = userRepository.findByIdentityId(identityId)
+                .orElseThrow(() -> new ResourceNotFound("User not found"));
 
-        List<UserSpecialisationDbo> userSpecialisations = userRequest.specialisations().stream()
+        List<UserSpecialisationDbo> userSpecialisations = completeCreateUserRequest.specialisations().stream()
                 .map(userSpecialisation -> new UserSpecialisationDbo(
                         userDbo,
                         specialisationDbos.get(userSpecialisation.specialisationId()),
                         userSpecialisation.proficiency()
                 )).toList();
 
-        UUID identityId = identityService.createUser(userRequest, roles);
+        identityService.assignRealmRole(identityId, roles);
         userDbo.setUserSpecialisations(userSpecialisations);
         userDbo.setIdentityId(identityId);
         return userRepository.save(userDbo).getId();
@@ -75,12 +76,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUser() {
+    public UserDto getUserOrCreate() {
         UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
-        UserDbo userDbo = userRepository.findByIdentityId(identityId)
-                .orElseThrow(() -> new ResourceNotFound("User Not Found from Identity Provider " + identityId));
+        Optional<UserDbo> userDbo = userRepository.findByIdentityId(identityId);
 
-        return userMapper.toDto(userDbo);
+        if(userDbo.isEmpty()) {
+            UserRepresentation userRepresentation = identityService.getUser(identityId);
+            UserDbo createUserDbo = UserDbo.builder()
+                    .firstName(userRepresentation.getFirstName())
+                    .lastName(userRepresentation.getLastName())
+                    .email(userRepresentation.getEmail())
+                    .username(userRepresentation.getUsername())
+                    .identityId(UUID.fromString(userRepresentation.getId()))
+                    .onboardingStatus(OnboardingStatus.PENDING)
+                    .build();
+            return userMapper.toDto(userRepository.save(createUserDbo));
+
+        }
+        return userMapper.toDto(userDbo.get());
     }
 
     private List<Role> getRoles(String requestedRole) {

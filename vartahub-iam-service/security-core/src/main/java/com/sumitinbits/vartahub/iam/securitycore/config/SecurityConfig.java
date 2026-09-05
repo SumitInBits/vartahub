@@ -36,7 +36,6 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, getPublicEndpointPaths()).permitAll()
-                        .requestMatchers(HttpMethod.POST, postPublicEndpointPaths()).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->
@@ -63,12 +62,6 @@ public class SecurityConfig {
                 "/actuator/health",
                 "/actuator/info",
                 "/api/v1/iam/specialisations"
-        };
-    }
-
-    private String[] postPublicEndpointPaths() {
-        return new String[]{
-                "/api/v1/iam/users"
         };
     }
 }

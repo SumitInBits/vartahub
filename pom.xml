@@ -29,6 +29,7 @@
         <module>vartahub-meeting-service</module>
         <module>vartahub-gateway-server</module>
         <module>vartahub-commons</module>
+        <module>vartahub-notification-service</module>
     </modules>
 
     <dependencyManagement>

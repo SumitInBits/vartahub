@@ -10,9 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.sumitinbits</groupId>
     <artifactId>vartahub-gateway-server</artifactId>
-    <name>varthub-gateway-server</name>
 
     <dependencies>
         <dependency>

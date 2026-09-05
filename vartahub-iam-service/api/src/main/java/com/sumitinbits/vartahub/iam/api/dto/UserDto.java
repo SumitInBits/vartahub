@@ -2,6 +2,7 @@ package com.sumitinbits.vartahub.iam.api.dto;
 
 
 import com.sumitinbits.vartahub.iam.api.enums.Experience;
+import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public record UserDto(
         UUID identityProviderId,
         Role role,
         Experience experience,
+        OnboardingStatus onboardingStatus,
         Integer experienceYears,
         String organizationName,
         List<UserSpecialisationDto> userSpecialisations

@@ -1,6 +1,7 @@
 package com.sumitinbits.iam.vartahub.app.model;
 
 import com.sumitinbits.vartahub.iam.api.enums.Experience;
+import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +46,10 @@ public class UserDbo extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Experience experience;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OnboardingStatus onboardingStatus;
 
     private Integer experienceYears;
 

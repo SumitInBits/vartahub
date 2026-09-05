@@ -1,13 +1,11 @@
 package com.sumitinbits.iam.vartahub.app.service.impl;
 
 import com.sumitinbits.iam.vartahub.app.config.KeycloakConfig;
-import com.sumitinbits.vartahub.iam.api.dto.UserRequest;
+import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
 import com.sumitinbits.iam.vartahub.app.service.IdentityService;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -27,20 +25,21 @@ public class KeycloakServiceImpl implements IdentityService {
     private final KeycloakConfig keycloakConfig;
 
     @Override
-    public UUID createUser(UserRequest request,  List<Role> roles) {
+    public UUID createUser(CompleteCreateUserRequest request, List<Role> roles) {
         UserRepresentation user = constructUserRepresentation(request);
-
-        try (Response response = getRealmResource().users().create(user)) {
-            if (!response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
-                log.error("Failed to create Keycloak user. Status: {}, Email: {}", response.getStatus(), request.email());
-                throw new IllegalStateException("Failed to create user in Keycloak. Status: " + response.getStatus());
-            }
-
-            UUID userId = UUID.fromString(CreatedResponseUtil.getCreatedId(response));
-            log.info("Keycloak user created successfully. UserId: {}", userId);
-            assignRealmRole(userId, roles);
-            return userId;
-        }
+//
+//        try (Response response = getRealmResource().users().create(user)) {
+//            if (!response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
+//                log.error("Failed to create Keycloak user. Status: {}, Email: {}", response.getStatus(), request.email());
+//                throw new IllegalStateException("Failed to create user in Keycloak. Status: " + response.getStatus());
+//            }
+//
+//            UUID userId = UUID.fromString(CreatedResponseUtil.getCreatedId(response));
+//            log.info("Keycloak user created successfully. UserId: {}", userId);
+//            assignRealmRole(userId, roles);
+//            return userId;
+//        }
+        return UUID.randomUUID();
     }
 
     @Override
@@ -49,20 +48,20 @@ public class KeycloakServiceImpl implements IdentityService {
     }
 
     @Override
-    public void updateUser(UUID keycloakUserId, UserRequest request) {
+    public void updateUser(UUID keycloakUserId, CompleteCreateUserRequest request) {
         UserResource userResource = getUserResource(keycloakUserId);
         UserRepresentation user = userResource.toRepresentation();
 
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setEmail(request.email());
-        user.setUsername(request.username());
-
-        userResource.update(user);
-
-        if (request.password() != null && !request.password().isBlank()) {
-            updatePassword(userResource, request.password());
-        }
+//        user.setFirstName(request.firstName());
+//        user.setLastName(request.lastName());
+//        user.setEmail(request.email());
+//        user.setUsername(request.username());
+//
+//        userResource.update(user);
+//
+//        if (request.password() != null && !request.password().isBlank()) {
+//            updatePassword(userResource, request.password());
+//        }
 
         log.info("Keycloak user updated successfully. UserId: {}", keycloakUserId);
     }
@@ -88,6 +87,21 @@ public class KeycloakServiceImpl implements IdentityService {
         updateUserStatus(keycloakUserId, false);
     }
 
+    @Override
+    public void assignRealmRole(UUID userId, List<Role> roles) {
+        RealmResource realm = getRealmResource();
+
+        List<RoleRepresentation> roleRepresentations = roles.stream()
+                .map(role -> realm.roles()
+                        .get(role.name())
+                        .toRepresentation()
+                )
+                .toList();
+
+        getUserResource(userId).roles().realmLevel().add(roleRepresentations);
+        log.info("Assigned realm role '{}' to user {}", roles, userId);
+    }
+
     private void updateUserStatus(UUID keycloakUserId, boolean enabled) {
         UserRepresentation user = getUserResource(keycloakUserId).toRepresentation();
         user.setEnabled(enabled);
@@ -100,16 +114,16 @@ public class KeycloakServiceImpl implements IdentityService {
         userResource.resetPassword(credential);
     }
 
-    private UserRepresentation constructUserRepresentation(UserRequest request) {
+    private UserRepresentation constructUserRepresentation(CompleteCreateUserRequest request) {
         UserRepresentation user = new UserRepresentation();
 
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setEmail(request.email());
-        user.setUsername(request.username());
-        user.setEnabled(true);
-        user.setEmailVerified(true);
-        user.setCredentials(List.of(createPasswordCredential(request.password())));
+//        user.setFirstName(request.firstName());
+//        user.setLastName(request.lastName());
+//        user.setEmail(request.email());
+//        user.setUsername(request.username());
+//        user.setEnabled(true);
+//        user.setEmailVerified(true);
+//        user.setCredentials(List.of(createPasswordCredential(request.password())));
         return user;
     }
 
@@ -129,17 +143,4 @@ public class KeycloakServiceImpl implements IdentityService {
         return getRealmResource().users().get(userId.toString());
     }
 
-    private void assignRealmRole(UUID userId, List<Role> roles) {
-        RealmResource realm = getRealmResource();
-
-        List<RoleRepresentation> roleRepresentations = roles.stream()
-                .map(role -> realm.roles()
-                        .get(role.name())
-                        .toRepresentation()
-                )
-                .toList();
-
-        getUserResource(userId).roles().realmLevel().add(roleRepresentations);
-        log.info("Assigned realm role '{}' to user {}", roles, userId);
-    }
 }

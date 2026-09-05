@@ -3,7 +3,7 @@ package com.sumitinbits.iam.vartahub.app.controller;
 import com.sumitinbits.vartahub.iam.api.dto.SpecialisationDto;
 import com.sumitinbits.vartahub.iam.api.dto.SpecialisationRequest;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
-import com.sumitinbits.vartahub.iam.api.dto.UserRequest;
+import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
 import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
 import com.sumitinbits.iam.vartahub.app.service.UserService;
 import jakarta.validation.Valid;
@@ -36,15 +36,15 @@ public class IamController {
         return specialisationService.getSpecialisations();
     }
 
-    @PostMapping("/users")
-    public UUID createUser(@Valid @RequestBody UserRequest userRequest) {
-        log.info("API: create user {}", userRequest);
-        return userService.createUser(userRequest);
+    @PostMapping("/users/complete")
+    public UUID completeCreateUser(@Valid @RequestBody CompleteCreateUserRequest completeCreateUserRequest) {
+        log.info("API: create user {}", completeCreateUserRequest);
+        return userService.completeCreateUser(completeCreateUserRequest);
     }
 
     @GetMapping("/users")
     public UserDto getUser() {
         log.info("API: get user by context");
-        return userService.getUser();
+        return userService.getUserOrCreate();
     }
 }
