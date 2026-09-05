@@ -1,32 +1,21 @@
 package com.sumitinbits.vartahub.meeting.app.model;
 
+import com.sumitinbits.vartahub.meeting.api.enums.MeetingParticipantStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(
         name = "meeting_participants",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "meeting_participant_unique",
-                        columnNames = {"meeting_id", "participant_id"}
-                )
-        },
-        indexes = {
-                @Index(
-                        name = "meeting_participant_participant_user_id_idx",
-                        columnList = "participant_user_id"
-                ),
-                @Index(
-                        name = "meeting_participant_meeting_idx",
-                        columnList = "meeting_id"
+                        name = "uk_meeting_participant",
+                        columnNames = {"meeting_id", "user_id"}
                 )
         }
 )
@@ -34,13 +23,29 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class MeetingParticipantDbo extends BaseEntity {
-    @Column(nullable = false)
-    private UUID meetingId;
 
-    @Column(nullable = false)
-    private UUID participantUserId;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
-    @Column(length = 5000)
-    private String comment;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "meeting_id", nullable = false)
+    private MeetingDbo meeting;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MeetingParticipantStatus meetingParticipantStatus;
+
+    @OneToMany(
+            mappedBy = "toParticipant",
+            cascade = CascadeType.ALL
+    )
+    @Builder.Default
+    private List<MeetingFeedbackDbo> feedbacks = new ArrayList<>();
+
+    public void addFeedback(MeetingFeedbackDbo feedback) {
+        feedbacks.add(feedback);
+        feedback.setToParticipant(this);
+    }
 }

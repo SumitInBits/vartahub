@@ -1,5 +1,6 @@
 package com.sumitinbits.vartahub.meeting.app.service.impl;
 
+import com.sumitinbits.vartahub.meeting.api.dto.ScheduleMeetingRequest;
 import com.sumitinbits.vartahub.meeting.app.service.MeetingMatchingService;
 import com.sumitinbits.vartahub.meeting.app.service.MeetingService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     @Async
-    public void scheduleMeeting() {
+    public void scheduleMeeting(ScheduleMeetingRequest scheduleMeetingRequest) {
 
     }
 }
