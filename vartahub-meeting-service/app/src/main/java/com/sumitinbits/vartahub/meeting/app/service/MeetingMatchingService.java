@@ -1,9 +1,8 @@
 package com.sumitinbits.vartahub.meeting.app.service;
 
-import com.sumitinbits.vartahub.meeting.api.dto.ScheduleMeetingRequest;
-
-import java.util.UUID;
+import com.sumitinbits.vartahub.meeting.api.dto.MatchedMeetingDto;
+import com.sumitinbits.vartahub.meeting.app.model.MeetingDbo;
 
 public interface MeetingMatchingService {
-    void submitMeetingMatch(ScheduleMeetingRequest scheduleMeetingRequest, UUID userId);
+    MatchedMeetingDto submitMeetingMatch(MeetingDbo meetingDbo);
 }

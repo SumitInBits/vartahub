@@ -11,11 +11,11 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        name = "meeting_participants",
+        name = "scheduled_meeting_participants",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_meeting_participant",
-                        columnNames = {"meeting_id", "user_id"}
+                        name = "uk_scheduled_meeting_participant",
+                        columnNames = {"scheduled_meeting_id", "user_id"}
                 )
         }
 )
@@ -24,14 +24,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class MeetingParticipantDbo extends BaseEntity {
+public class ScheduledMeetingParticipantDbo extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "meeting_id", nullable = false)
-    private MeetingDbo meeting;
+    @JoinColumn(name = "scheduled_meeting_id", nullable = false)
+    private ScheduledMeetingDbo scheduledMeeting;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,9 +42,9 @@ public class MeetingParticipantDbo extends BaseEntity {
             cascade = CascadeType.ALL
     )
     @Builder.Default
-    private List<MeetingFeedbackDbo> feedbacks = new ArrayList<>();
+    private List<ScheduledMeetingFeedbackDbo> feedbacks = new ArrayList<>();
 
-    public void addFeedback(MeetingFeedbackDbo feedback) {
+    public void addFeedback(ScheduledMeetingFeedbackDbo feedback) {
         feedbacks.add(feedback);
         feedback.setToParticipant(this);
     }

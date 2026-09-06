@@ -2,15 +2,15 @@ package com.sumitinbits.vartahub.commons.proxy;
 
 import com.sumitinbits.vartahub.commons.api.ApplicationProxy;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-@Configuration
+@AutoConfiguration
 public class ApplicationProxyConfig {
     private static final String HTTP_PROTOCOL = "http://";
 

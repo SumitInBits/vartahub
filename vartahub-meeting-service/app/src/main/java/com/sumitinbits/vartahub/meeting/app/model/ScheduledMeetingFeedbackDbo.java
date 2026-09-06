@@ -10,9 +10,9 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(
-        name = "meeting_feedbacks",
+        name = "scheduled_meeting_feedbacks",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_meeting_feedback", columnNames = {"from_participant_id", "to_participant_id"})
+                @UniqueConstraint(name = "uk_scheduled_meeting_feedback", columnNames = {"from_participant_id", "to_participant_id"})
         }
 )
 @Data
@@ -20,14 +20,14 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class MeetingFeedbackDbo extends BaseEntity {
+public class ScheduledMeetingFeedbackDbo extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "from_participant_id", nullable = false)
-    private MeetingParticipantDbo fromParticipant;
+    private ScheduledMeetingParticipantDbo fromParticipant;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "to_participant_id", nullable = false)
-    private MeetingParticipantDbo toParticipant;
+    private ScheduledMeetingParticipantDbo toParticipant;
 
     @Column(length = 2000)
     private String feedback;

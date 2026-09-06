@@ -1,10 +1,14 @@
 package com.sumitinbits.vartahub.meeting.app.model;
 
+import com.sumitinbits.vartahub.meeting.api.enums.MeetingStatus;
+import com.sumitinbits.vartahub.meeting.api.enums.MeetingType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +17,10 @@ import java.util.UUID;
 @Table(
         name = "meetings",
         indexes = {
-                @Index(name = "meetings_specialisation_idx", columnList = "specialisation_id"),
+                @Index(name = "meeting_user_idx", columnList = "user_id"),
+                @Index(name = "meeting_specialisation_idx", columnList = "specialisation_id"),
+                @Index(name = "meeting_status_idx", columnList = "status"),
+                @Index(name = "meeting_target_user_id_idx", columnList = "target_user_id")
         }
 )
 @Data
@@ -23,27 +30,29 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public class MeetingDbo extends BaseEntity {
     @Column(nullable = false)
+    private UUID userId;
+
+    @Column(nullable = false)
     private UUID specialisationId;
 
-    private Instant startTime;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MeetingType type;
 
-    private Instant endTime;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MeetingStatus status;
 
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<MeetingRequestDbo> meetingRequests = new ArrayList<>();
+    /**
+     * targetUserId; can refer to instructorId if meetingType selected as instructor
+     */
+    private UUID targetUserId;
 
-    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<MeetingParticipantDbo> participants = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "scheduled_meeting_id")
+    private ScheduledMeetingDbo scheduledMeeting;
 
-    public void addMeetingRequest(MeetingRequestDbo meetingRequest) {
-        meetingRequests.add(meetingRequest);
-        meetingRequest.setMeeting(this);
-    }
-
-    public void addParticipant(MeetingParticipantDbo participant) {
-        participants.add(participant);
-        participant.setMeeting(this);
-    }
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "meeting_time_slot_id", nullable = false)
+    List<TimeSlotProposalDbo> timeSlotProposals = new ArrayList<>();
 }

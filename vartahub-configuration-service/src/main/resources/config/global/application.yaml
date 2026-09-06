@@ -22,3 +22,9 @@ eureka:
     fetchRegistry: true
   instance:
     prefer-ip-address: true
+
+
+services:
+  iam-service: vartahub-iam-service
+  meeting-service: vartahub-meeting-service
+  notification-service: vartahub-notification-service

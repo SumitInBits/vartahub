@@ -1,8 +1,8 @@
 package com.sumitinbits.vartahub.meeting.app.repository.impl;
 
 import com.sumitinbits.vartahub.meeting.api.enums.MeetingType;
-import com.sumitinbits.vartahub.meeting.app.model.MeetingAvailability;
-import com.sumitinbits.vartahub.meeting.app.repository.MeetingAvailabilityRepository;
+import com.sumitinbits.vartahub.meeting.app.model.MeetingAvailabilitySlot;
+import com.sumitinbits.vartahub.meeting.app.repository.MeetingAvailabilitySlotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,7 +11,7 @@ import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
-public class MeetingAvailabilityRepositoryImpl implements MeetingAvailabilityRepository {
+public class MeetingAvailabilitySlotRepositoryImpl implements MeetingAvailabilitySlotRepository {
 
     private static final String KEY_PREFIX = "meeting-availability:";
     private static final String SPECIALISATION_INDEX = "meeting-availability:specialisation:";
@@ -20,7 +20,7 @@ public class MeetingAvailabilityRepositoryImpl implements MeetingAvailabilityRep
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public MeetingAvailability save(MeetingAvailability availability) {
+    public MeetingAvailabilitySlot save(MeetingAvailabilitySlot availability) {
         String key = KEY_PREFIX + availability.getId();
         redisTemplate.opsForValue().set(key, availability);
         addIndexes(availability);
@@ -28,14 +28,14 @@ public class MeetingAvailabilityRepositoryImpl implements MeetingAvailabilityRep
     }
 
     @Override
-    public MeetingAvailability findById(UUID id) {
-        return (MeetingAvailability) redisTemplate.opsForValue()
+    public MeetingAvailabilitySlot findById(UUID id) {
+        return (MeetingAvailabilitySlot) redisTemplate.opsForValue()
                 .get(KEY_PREFIX + id);
     }
 
     @Override
     public void deleteById(UUID id) {
-        MeetingAvailability availability = findById(id);
+        MeetingAvailabilitySlot availability = findById(id);
 
         if (availability == null) {
             return;
@@ -46,7 +46,7 @@ public class MeetingAvailabilityRepositoryImpl implements MeetingAvailabilityRep
     }
 
     @Override
-    public List<MeetingAvailability> findCandidates(UUID specialisationId, MeetingType meetingType) {
+    public List<MeetingAvailabilitySlot> findCandidates(UUID specialisationId, MeetingType meetingType) {
         Set<Object> ids = redisTemplate.opsForSet()
                 .intersect(
                         specialisationKey(specialisationId),
@@ -65,7 +65,7 @@ public class MeetingAvailabilityRepositoryImpl implements MeetingAvailabilityRep
                 .toList();
     }
 
-    private void addIndexes(MeetingAvailability availability) {
+    private void addIndexes(MeetingAvailabilitySlot availability) {
         redisTemplate.opsForSet().add(
                 specialisationKey(availability.getSpecialisationId()),
                 availability.getId()
@@ -77,7 +77,7 @@ public class MeetingAvailabilityRepositoryImpl implements MeetingAvailabilityRep
         );
     }
 
-    private void removeIndexes(MeetingAvailability availability) {
+    private void removeIndexes(MeetingAvailabilitySlot availability) {
         redisTemplate.opsForSet().remove(
                 specialisationKey(availability.getSpecialisationId()),
                 availability.getId()

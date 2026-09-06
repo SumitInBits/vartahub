@@ -10,5 +10,7 @@ public interface UserService {
 
     UserDto getUserByIdUnsafe(UUID userId);
 
+    UserDto getUserByIdentityUnsafe(UUID identityId);
+
     UserDto getUserOrCreate();
 }

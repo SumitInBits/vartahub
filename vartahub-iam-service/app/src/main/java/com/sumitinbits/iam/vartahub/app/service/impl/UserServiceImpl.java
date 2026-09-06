@@ -76,6 +76,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUserByIdentityUnsafe(UUID identityId) {
+        UserDbo userDbo = userRepository.findByIdentityId(identityId)
+                .orElseThrow(() -> new ResourceNotFound("User not found " + identityId));
+        return userMapper.toDto(userDbo);
+    }
+
+    @Override
     public UserDto getUserOrCreate() {
         UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
         Optional<UserDbo> userDbo = userRepository.findByIdentityId(identityId);
