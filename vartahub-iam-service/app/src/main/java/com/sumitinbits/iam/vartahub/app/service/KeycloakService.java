@@ -1,18 +1,15 @@
 package com.sumitinbits.iam.vartahub.app.service;
 
-import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface IdentityService {
-    UUID createUser(CompleteCreateUserRequest completeCreateUserRequest, List<Role> roles);
-
+public interface KeycloakService {
     UserRepresentation getUser(UUID identityProviderId);
 
-    void updateUser(UUID identityProviderId, CompleteCreateUserRequest request);
+    void updateUser(UUID keycloakUserId, UUID vartahubUserId, List<Role> roles);
 
     void deleteUser(UUID userId);
 

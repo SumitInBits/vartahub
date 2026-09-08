@@ -1,6 +1,6 @@
 package com.sumitinbits.vartahub.iam.securitycore.util;
 
-import com.sumitinbits.vartahub.iam.api.security.AuthenticatedUser;
+import com.sumitinbits.vartahub.iam.api.security.VartahubAuthUser;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,14 +12,14 @@ import java.util.UUID;
 
 @UtilityClass
 public class AuthenticationUtil {
-    public AuthenticatedUser getAuthenticatedUser() {
+    public VartahubAuthUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)) {
             throw new IllegalStateException("No authenticated user found");
         }
 
         Jwt token = jwtAuthentication.getToken();
-        UUID identifyId = UUID.fromString(Objects.requireNonNull(token.getSubject()));
-        return new AuthenticatedUser(identifyId);
+        UUID keycloakId = UUID.fromString(Objects.requireNonNull(token.getSubject()));
+        return new VartahubAuthUser(keycloakId);
     }
 }

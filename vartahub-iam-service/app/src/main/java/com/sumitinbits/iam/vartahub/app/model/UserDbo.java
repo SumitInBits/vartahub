@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(
         name = "users", indexes = {
-        @Index(name = "users_identity_id_idx", columnList = "identity_id")
+        @Index(name = "users_keycloak_id_idx", columnList = "keycloak_id")
 })
 @Data
 @NoArgsConstructor
@@ -37,7 +37,7 @@ public class UserDbo extends BaseEntity {
     private String profilePhotoKey;
 
     @Column(nullable = false)
-    private UUID identityId;
+    private UUID keycloakId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

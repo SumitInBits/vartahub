@@ -20,7 +20,7 @@ public class KeycloakConfig {
     @Value("${keycloak.client-id}")
     private String clientId;
 
-    @Value("${keycloak.client-secret}")
+    @Value("${keycloak.config.iam-client-secret}")
     private String clientSecret;
 
     @Bean

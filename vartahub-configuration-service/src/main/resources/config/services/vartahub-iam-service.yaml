@@ -11,8 +11,20 @@ spring:
 keycloak:
   server-url: http://localhost:8090
   realm: vartahub
-  client-id: vartahub
-  client-secret: 1FubevGE7O5odFBztbjmDtX6BOWgzydO50lr5HcamIS1SYqVbIqMzh4wkLqt1yGkJH6ppg3cSQdBbvICYSWJsK
+  client-id: vartahub-iam-service
+
+  config:
+    admin-username: ${KEYCLOAK_ADMIN_USERNAME}
+    admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
+    iam-client-secret: ${KEYCLOAK_IAM_CLIENT_SECRET}
+
+    google-provider-client-id: ${GOOGLE_PROVIDER_CLIENT_ID}
+    google-provider-client-secret: ${GOOGLE_PROVIDER_CLIENT_SECRET}
+
+    smtp-host: ${SMTP_HOST}
+    smtp-port: ${SMTP_PORT}
+    smtp-user: ${SMTP_USER}
+    smtp-password: ${SMTP_PASSWORD}
 
 server:
   port: 9001

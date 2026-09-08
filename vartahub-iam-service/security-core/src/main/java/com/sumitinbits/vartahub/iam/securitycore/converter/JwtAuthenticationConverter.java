@@ -50,7 +50,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                 .filter(String.class::isInstance)
                 .map(String.class::cast)
                 .map(role -> (GrantedAuthority)
-                        new SimpleGrantedAuthority("ROLE_" + role))
+                        new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                 .toList();
     }
 }

@@ -91,7 +91,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     private UserDto getUser() {
-        UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
+        UUID identityId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
         return iamServiceClient.getUserByIdentityId(identityId);
     }
 }

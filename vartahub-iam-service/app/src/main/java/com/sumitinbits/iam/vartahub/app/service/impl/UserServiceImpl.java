@@ -5,7 +5,7 @@ import com.sumitinbits.iam.vartahub.app.model.SpecialisationDbo;
 import com.sumitinbits.iam.vartahub.app.model.UserDbo;
 import com.sumitinbits.iam.vartahub.app.model.UserSpecialisationDbo;
 import com.sumitinbits.iam.vartahub.app.repository.UserRepository;
-import com.sumitinbits.iam.vartahub.app.service.IdentityService;
+import com.sumitinbits.iam.vartahub.app.service.KeycloakService;
 import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
 import com.sumitinbits.iam.vartahub.app.service.UserService;
 import com.sumitinbits.vartahub.commons.exception.OperationNotPermitted;
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final SpecialisationService specialisationService;
-    private final IdentityService identityService;
+    private final KeycloakService identityService;
 
     @Override
     @Transactional
@@ -51,8 +51,8 @@ public class UserServiceImpl implements UserService {
             throw new OperationNotPermitted("Some specialisations not found");
         }
 
-        UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
-        UserDbo userDbo = userRepository.findByIdentityId(identityId)
+        UUID identityId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
+        UserDbo userDbo = userRepository.findByKeycloakId(identityId)
                 .orElseThrow(() -> new ResourceNotFound("User not found"));
 
         List<UserSpecialisationDbo> userSpecialisations = completeCreateUserRequest.specialisations().stream()
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
         identityService.assignRealmRole(identityId, roles);
         userDbo.setUserSpecialisations(userSpecialisations);
-        userDbo.setIdentityId(identityId);
+        userDbo.setKeycloakId(identityId);
         return userRepository.save(userDbo).getId();
     }
 
@@ -77,15 +77,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByIdentityUnsafe(UUID identityId) {
-        UserDbo userDbo = userRepository.findByIdentityId(identityId)
+        UserDbo userDbo = userRepository.findByKeycloakId(identityId)
                 .orElseThrow(() -> new ResourceNotFound("User not found " + identityId));
         return userMapper.toDto(userDbo);
     }
 
     @Override
     public UserDto getUserOrCreate() {
-        UUID identityId = AuthenticationUtil.getAuthenticatedUser().identityId();
-        Optional<UserDbo> userDbo = userRepository.findByIdentityId(identityId);
+        UUID identityId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
+        Optional<UserDbo> userDbo = userRepository.findByKeycloakId(identityId);
 
         if(userDbo.isEmpty()) {
             UserRepresentation userRepresentation = identityService.getUser(identityId);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
                     .lastName(userRepresentation.getLastName())
                     .email(userRepresentation.getEmail())
                     .username(userRepresentation.getUsername())
-                    .identityId(UUID.fromString(userRepresentation.getId()))
+                    .keycloakId(UUID.fromString(userRepresentation.getId()))
                     .onboardingStatus(OnboardingStatus.PENDING)
                     .build();
             return userMapper.toDto(userRepository.save(createUserDbo));
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     private List<Role> getRoles(String requestedRole) {
         return switch (requestedRole.toUpperCase()) {
             case "USER" -> List.of(Role.USER);
-            case "INSTRUCTOR" -> List.of(Role.INSTRUCTOR, Role.USER);
+            case "INSTRUCTOR" -> List.of(Role.INSTRUCTOR);
             default -> throw new UnsupportedOperationException("Unsupported role: " + requestedRole);
         };
     }

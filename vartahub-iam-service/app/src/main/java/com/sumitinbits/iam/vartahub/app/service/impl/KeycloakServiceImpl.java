@@ -1,8 +1,7 @@
 package com.sumitinbits.iam.vartahub.app.service.impl;
 
 import com.sumitinbits.iam.vartahub.app.config.KeycloakConfig;
-import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
-import com.sumitinbits.iam.vartahub.app.service.IdentityService;
+import com.sumitinbits.iam.vartahub.app.service.KeycloakService;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,33 +13,17 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class KeycloakServiceImpl implements IdentityService {
+public class KeycloakServiceImpl implements KeycloakService {
     private final Keycloak keycloak;
     private final KeycloakConfig keycloakConfig;
-
-    @Override
-    public UUID createUser(CompleteCreateUserRequest request, List<Role> roles) {
-        UserRepresentation user = constructUserRepresentation(request);
-//
-//        try (Response response = getRealmResource().users().create(user)) {
-//            if (!response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
-//                log.error("Failed to create Keycloak user. Status: {}, Email: {}", response.getStatus(), request.email());
-//                throw new IllegalStateException("Failed to create user in Keycloak. Status: " + response.getStatus());
-//            }
-//
-//            UUID userId = UUID.fromString(CreatedResponseUtil.getCreatedId(response));
-//            log.info("Keycloak user created successfully. UserId: {}", userId);
-//            assignRealmRole(userId, roles);
-//            return userId;
-//        }
-        return UUID.randomUUID();
-    }
 
     @Override
     public UserRepresentation getUser(UUID keycloakUserId) {
@@ -48,22 +31,28 @@ public class KeycloakServiceImpl implements IdentityService {
     }
 
     @Override
-    public void updateUser(UUID keycloakUserId, CompleteCreateUserRequest request) {
+    public void updateUser(UUID keycloakUserId, UUID vartahubUserId, List<Role> roles) {
         UserResource userResource = getUserResource(keycloakUserId);
         UserRepresentation user = userResource.toRepresentation();
 
-//        user.setFirstName(request.firstName());
-//        user.setLastName(request.lastName());
-//        user.setEmail(request.email());
-//        user.setUsername(request.username());
-//
-//        userResource.update(user);
-//
-//        if (request.password() != null && !request.password().isBlank()) {
-//            updatePassword(userResource, request.password());
-//        }
+        Map<String, List<String>> attributes = user.getAttributes();
+        if(attributes == null) {
+            attributes = new HashMap<>();
+        }
+        attributes.put("vartahubUserId", List.of(vartahubUserId.toString()));
 
-        log.info("Keycloak user updated successfully. UserId: {}", keycloakUserId);
+        user.setAttributes(attributes);
+
+        List<String> keycloakRoles = roles.stream().map(role -> role.name().toLowerCase()).toList();
+
+        user.setRealmRoles(keycloakRoles);
+        userResource.update(user);
+
+        log.info(
+                "Keycloak user updated successfully. KeycloakUserId: {}, VartahubUserId: {}",
+                keycloakUserId,
+                vartahubUserId
+        );
     }
 
     @Override
@@ -107,24 +96,6 @@ public class KeycloakServiceImpl implements IdentityService {
         user.setEnabled(enabled);
         getUserResource(keycloakUserId).update(user);
         log.info("Keycloak user {} successfully. UserId: {}", enabled ? "enabled" : "disabled", keycloakUserId);
-    }
-
-    private void updatePassword(UserResource userResource, String password) {
-        CredentialRepresentation credential = createPasswordCredential(password);
-        userResource.resetPassword(credential);
-    }
-
-    private UserRepresentation constructUserRepresentation(CompleteCreateUserRequest request) {
-        UserRepresentation user = new UserRepresentation();
-
-//        user.setFirstName(request.firstName());
-//        user.setLastName(request.lastName());
-//        user.setEmail(request.email());
-//        user.setUsername(request.username());
-//        user.setEnabled(true);
-//        user.setEmailVerified(true);
-//        user.setCredentials(List.of(createPasswordCredential(request.password())));
-        return user;
     }
 
     private CredentialRepresentation createPasswordCredential(String password) {
