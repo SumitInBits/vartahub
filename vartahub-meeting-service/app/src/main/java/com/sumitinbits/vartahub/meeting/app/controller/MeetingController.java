@@ -2,7 +2,6 @@ package com.sumitinbits.vartahub.meeting.app.controller;
 
 import com.sumitinbits.vartahub.meeting.api.dto.CreateMeetingRequest;
 import com.sumitinbits.vartahub.meeting.api.dto.MeetingDto;
-import com.sumitinbits.vartahub.meeting.api.dto.MeetingRequestDto;
 import com.sumitinbits.vartahub.meeting.app.service.MeetingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
