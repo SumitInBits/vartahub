@@ -41,10 +41,6 @@ public class UserDbo extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Experience experience;
 
     @Enumerated(EnumType.STRING)
@@ -54,6 +50,8 @@ public class UserDbo extends BaseEntity {
     private Integer experienceYears;
 
     private String organizationName;
+
+    private String organizationRole;
 
     @OneToMany(
             mappedBy = "user",

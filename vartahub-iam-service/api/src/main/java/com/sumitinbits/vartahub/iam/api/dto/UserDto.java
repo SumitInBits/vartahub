@@ -16,11 +16,11 @@ public record UserDto(
         String email,
         String profilePhotoKey,
         UUID identityProviderId,
-        Role role,
         Experience experience,
         OnboardingStatus onboardingStatus,
         Integer experienceYears,
         String organizationName,
+        String organizationRole,
         List<UserSpecialisationDto> userSpecialisations
 ) {
 }

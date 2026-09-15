@@ -10,7 +10,7 @@ import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
 import com.sumitinbits.iam.vartahub.app.service.UserService;
 import com.sumitinbits.vartahub.commons.exception.OperationNotPermitted;
 import com.sumitinbits.vartahub.commons.exception.ResourceNotFound;
-import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
+import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
 import com.sumitinbits.vartahub.iam.api.dto.UserSpecialisationRequest;
 import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
@@ -34,12 +34,11 @@ public class UserServiceImpl implements UserService {
     private final SpecialisationService specialisationService;
     private final KeycloakService identityService;
 
-    @Override
     @Transactional
-    public UUID completeCreateUser(CompleteCreateUserRequest completeCreateUserRequest) {
-        List<Role> roles = getRoles(completeCreateUserRequest.role());
+    public UUID onboardUser(OnboardUserRequest onboardUserRequest) {
+        List<Role> roles = getRoles(onboardUserRequest.role());
 
-        Set<UUID> requestSpecialisationIds = completeCreateUserRequest.specialisations().stream()
+        Set<UUID> requestSpecialisationIds = onboardUserRequest.specialisations().stream()
                 .map(UserSpecialisationRequest::specialisationId)
                 .collect(Collectors.toSet());
 
@@ -55,7 +54,11 @@ public class UserServiceImpl implements UserService {
         UserDbo userDbo = userRepository.findByKeycloakId(identityId)
                 .orElseThrow(() -> new ResourceNotFound("User not found"));
 
-        List<UserSpecialisationDbo> userSpecialisations = completeCreateUserRequest.specialisations().stream()
+        if(userDbo.getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+            throw new OperationNotPermitted("User onboarding completed");
+        }
+
+        List<UserSpecialisationDbo> userSpecialisations = onboardUserRequest.specialisations().stream()
                 .map(userSpecialisation -> new UserSpecialisationDbo(
                         userDbo,
                         specialisationDbos.get(userSpecialisation.specialisationId()),
@@ -64,7 +67,12 @@ public class UserServiceImpl implements UserService {
 
         identityService.assignRealmRole(identityId, roles);
         userDbo.setUserSpecialisations(userSpecialisations);
+        userDbo.setOrganizationRole(onboardUserRequest.organizationRole());
+        userDbo.setExperience(onboardUserRequest.experience());
+        userDbo.setExperienceYears(onboardUserRequest.experienceYears());
+        userDbo.setOrganizationName(onboardUserRequest.organizationName());
         userDbo.setKeycloakId(identityId);
+        userDbo.setOnboardingStatus(OnboardingStatus.COMPLETED);
         return userRepository.save(userDbo).getId();
     }
 
@@ -98,7 +106,6 @@ public class UserServiceImpl implements UserService {
                     .onboardingStatus(OnboardingStatus.PENDING)
                     .build();
             return userMapper.toDto(userRepository.save(createUserDbo));
-
         }
         return userMapper.toDto(userDbo.get());
     }

@@ -1,12 +1,12 @@
 package com.sumitinbits.iam.vartahub.app.service;
 
-import com.sumitinbits.vartahub.iam.api.dto.CompleteCreateUserRequest;
+import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
 
 import java.util.UUID;
 
 public interface UserService {
-    UUID completeCreateUser(CompleteCreateUserRequest completeCreateUserRequest);
+    UUID onboardUser(OnboardUserRequest onboardUserRequest);
 
     UserDto getUserByIdUnsafe(UUID userId);
 

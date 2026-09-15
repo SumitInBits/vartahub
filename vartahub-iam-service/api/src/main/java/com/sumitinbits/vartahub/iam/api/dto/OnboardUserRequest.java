@@ -6,11 +6,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record CompleteCreateUserRequest(
+public record OnboardUserRequest(
         @NotEmpty List<UserSpecialisationRequest> specialisations,
         @NotNull Experience experience,
         @NotNull String role,
         Integer experienceYears,
-        String organizationName
+        String organizationName,
+        String organizationRole
 ) {
 }
