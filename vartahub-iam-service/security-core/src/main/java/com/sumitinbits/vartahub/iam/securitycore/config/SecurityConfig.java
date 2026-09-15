@@ -33,7 +33,6 @@ public class SecurityConfig {
         log.info("Service security applied success!!!");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, getPublicEndpointPaths()).permitAll()
                         .anyRequest().authenticated()
@@ -42,19 +41,6 @@ public class SecurityConfig {
                         oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter))
                 )
                 .build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     private String[] getPublicEndpointPaths() {

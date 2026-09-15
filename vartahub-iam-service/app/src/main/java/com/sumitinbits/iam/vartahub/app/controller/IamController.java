@@ -9,10 +9,13 @@ import com.sumitinbits.iam.vartahub.app.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,9 +34,12 @@ public class IamController {
     }
 
     @GetMapping("/specialisations")
-    public List<SpecialisationDto> getSpecialisations() {
+    public Page<SpecialisationDto> getSpecialisations(
+            @PageableDefault(sort = "creationDate", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
         log.info("API: get specialisations");
-        return specialisationService.getSpecialisations();
+        return specialisationService.getSpecialisations(pageable);
     }
 
     @PostMapping("/users/complete")

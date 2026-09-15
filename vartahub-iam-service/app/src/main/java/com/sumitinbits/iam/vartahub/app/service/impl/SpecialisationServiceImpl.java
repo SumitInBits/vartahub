@@ -8,6 +8,8 @@ import com.sumitinbits.vartahub.commons.exception.OperationNotPermitted;
 import com.sumitinbits.vartahub.iam.api.dto.SpecialisationDto;
 import com.sumitinbits.vartahub.iam.api.dto.SpecialisationRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +39,9 @@ public class SpecialisationServiceImpl implements SpecialisationService {
     }
 
     @Override
-    public List<SpecialisationDto> getSpecialisations() {
-        return specialisationRepository.findAll().stream()
-                .map(specialisationMapper::toDto)
-                .toList();
+    public Page<SpecialisationDto> getSpecialisations(Pageable pageable) {
+        return specialisationRepository.findAll(pageable)
+                .map(specialisationMapper::toDto);
     }
 
     @Override
