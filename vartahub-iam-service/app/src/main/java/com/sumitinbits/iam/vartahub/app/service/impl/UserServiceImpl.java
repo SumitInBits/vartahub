@@ -37,7 +37,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UUID onboardUser(OnboardUserRequest onboardUserRequest) {
         List<Role> roles = getRoles(onboardUserRequest.role());
-
         Set<UUID> requestSpecialisationIds = onboardUserRequest.specialisations().stream()
                 .map(UserSpecialisationRequest::specialisationId)
                 .collect(Collectors.toSet());
@@ -50,30 +49,39 @@ public class UserServiceImpl implements UserService {
             throw new OperationNotPermitted("Some specialisations not found");
         }
 
-        UUID identityId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
-        UserDbo userDbo = userRepository.findByKeycloakId(identityId)
-                .orElseThrow(() -> new ResourceNotFound("User not found"));
+        UUID keycloakId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
+        Optional<UserDbo> userDbo = userRepository.findByKeycloakId(keycloakId);
 
-        if(userDbo.getOnboardingStatus() == OnboardingStatus.COMPLETED) {
-            throw new OperationNotPermitted("User onboarding completed");
+        if(userDbo.isPresent() && userDbo.get().getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+            throw new OperationNotPermitted("User already completed onboarding");
         }
+
+        UserRepresentation userRepresentation = identityService.getUser(keycloakId);
+        UserDbo onboardingUser = UserDbo.builder()
+                    .firstName(userRepresentation.getFirstName())
+                    .lastName(userRepresentation.getLastName())
+                    .email(userRepresentation.getEmail())
+                    .username(userRepresentation.getUsername())
+                    .keycloakId(UUID.fromString(userRepresentation.getId()))
+                    .onboardingStatus(OnboardingStatus.PENDING)
+                    .build();
 
         List<UserSpecialisationDbo> userSpecialisations = onboardUserRequest.specialisations().stream()
                 .map(userSpecialisation -> new UserSpecialisationDbo(
-                        userDbo,
+                        onboardingUser,
                         specialisationDbos.get(userSpecialisation.specialisationId()),
                         userSpecialisation.proficiency()
                 )).toList();
 
-        identityService.assignRealmRole(identityId, roles);
-        userDbo.setUserSpecialisations(userSpecialisations);
-        userDbo.setOrganizationRole(onboardUserRequest.organizationRole());
-        userDbo.setExperience(onboardUserRequest.experience());
-        userDbo.setExperienceYears(onboardUserRequest.experienceYears());
-        userDbo.setOrganizationName(onboardUserRequest.organizationName());
-        userDbo.setKeycloakId(identityId);
-        userDbo.setOnboardingStatus(OnboardingStatus.COMPLETED);
-        return userRepository.save(userDbo).getId();
+        identityService.assignRealmRole(keycloakId, roles);
+        onboardingUser.setUserSpecialisations(userSpecialisations);
+        onboardingUser.setOrganizationRole(onboardUserRequest.organizationRole());
+        onboardingUser.setExperience(onboardUserRequest.experience());
+        onboardingUser.setExperienceYears(onboardUserRequest.experienceYears());
+        onboardingUser.setOrganizationName(onboardUserRequest.organizationName());
+        onboardingUser.setKeycloakId(keycloakId);
+        onboardingUser.setOnboardingStatus(OnboardingStatus.COMPLETED);
+        return userRepository.save(onboardingUser).getId();
     }
 
     @Override
@@ -84,30 +92,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserByIdentityUnsafe(UUID identityId) {
-        UserDbo userDbo = userRepository.findByKeycloakId(identityId)
-                .orElseThrow(() -> new ResourceNotFound("User not found " + identityId));
+    public UserDto getUserByIdentityUnsafe(UUID keycloakId) {
+        UserDbo userDbo = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new ResourceNotFound("User not found " + keycloakId));
         return userMapper.toDto(userDbo);
     }
 
     @Override
-    public UserDto getUserOrCreate() {
-        UUID identityId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
-        Optional<UserDbo> userDbo = userRepository.findByKeycloakId(identityId);
+    public UserDto getUser() {
+        UUID keycloakId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
+        UserDbo userDbo = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new ResourceNotFound("User not found"));
+        return userMapper.toDto(userDbo);
+    }
 
-        if(userDbo.isEmpty()) {
-            UserRepresentation userRepresentation = identityService.getUser(identityId);
-            UserDbo createUserDbo = UserDbo.builder()
-                    .firstName(userRepresentation.getFirstName())
-                    .lastName(userRepresentation.getLastName())
-                    .email(userRepresentation.getEmail())
-                    .username(userRepresentation.getUsername())
-                    .keycloakId(UUID.fromString(userRepresentation.getId()))
-                    .onboardingStatus(OnboardingStatus.PENDING)
-                    .build();
-            return userMapper.toDto(userRepository.save(createUserDbo));
-        }
-        return userMapper.toDto(userDbo.get());
+    @Override
+    public OnboardingStatus getUserOnboardingStatus() {
+        UUID keycloakId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
+        return userRepository.findOnboardingStatusByKeycloakId(keycloakId).orElse(OnboardingStatus.PENDING);
     }
 
     private List<Role> getRoles(String requestedRole) {

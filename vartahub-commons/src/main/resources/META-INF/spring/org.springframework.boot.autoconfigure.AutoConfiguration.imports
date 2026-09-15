@@ -1,1 +1,2 @@
 com.sumitinbits.vartahub.commons.proxy.ApplicationProxyConfig
+com.sumitinbits.vartahub.commons.exception.GlobalExceptionHandler

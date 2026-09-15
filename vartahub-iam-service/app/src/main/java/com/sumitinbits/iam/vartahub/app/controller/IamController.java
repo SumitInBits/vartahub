@@ -1,11 +1,12 @@
 package com.sumitinbits.iam.vartahub.app.controller;
 
+import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
+import com.sumitinbits.iam.vartahub.app.service.UserService;
+import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
 import com.sumitinbits.vartahub.iam.api.dto.SpecialisationDto;
 import com.sumitinbits.vartahub.iam.api.dto.SpecialisationRequest;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
-import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
-import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
-import com.sumitinbits.iam.vartahub.app.service.UserService;
+import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,14 +44,20 @@ public class IamController {
     }
 
     @PostMapping("/users/onboard")
-    public UUID completeCreateUser(@Valid @RequestBody OnboardUserRequest onboardUserRequest) {
+    public UUID onboardUser(@Valid @RequestBody OnboardUserRequest onboardUserRequest) {
         log.info("API: onboard user {}", onboardUserRequest);
         return userService.onboardUser(onboardUserRequest);
+    }
+
+    @GetMapping("/users/onboard/status")
+    public OnboardingStatus onboardUser() {
+        log.info("API: onboard status");
+        return userService.getUserOnboardingStatus();
     }
 
     @GetMapping("/users")
     public UserDto getUser() {
         log.info("API: get user by context");
-        return userService.getUserOrCreate();
+        return userService.getUser();
     }
 }
