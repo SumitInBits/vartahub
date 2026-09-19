@@ -11,6 +11,7 @@ import com.sumitinbits.iam.vartahub.app.service.UserService;
 import com.sumitinbits.vartahub.commons.exception.OperationNotPermitted;
 import com.sumitinbits.vartahub.commons.exception.ResourceNotFound;
 import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
+import com.sumitinbits.vartahub.iam.api.dto.OnboardingStatusDto;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
 import com.sumitinbits.vartahub.iam.api.dto.UserSpecialisationRequest;
 import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
@@ -107,9 +108,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OnboardingStatus getUserOnboardingStatus() {
+    public OnboardingStatusDto getUserOnboardingStatus() {
         UUID keycloakId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
-        return userRepository.findOnboardingStatusByKeycloakId(keycloakId).orElse(OnboardingStatus.PENDING);
+        OnboardingStatus onboardingStatus = userRepository.findOnboardingStatusByKeycloakId(keycloakId)
+                .orElse(OnboardingStatus.PENDING);
+
+        return new OnboardingStatusDto(keycloakId, onboardingStatus);
     }
 
     private List<Role> getRoles(String requestedRole) {

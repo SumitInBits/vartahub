@@ -2,11 +2,7 @@ package com.sumitinbits.iam.vartahub.app.controller;
 
 import com.sumitinbits.iam.vartahub.app.service.SpecialisationService;
 import com.sumitinbits.iam.vartahub.app.service.UserService;
-import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
-import com.sumitinbits.vartahub.iam.api.dto.SpecialisationDto;
-import com.sumitinbits.vartahub.iam.api.dto.SpecialisationRequest;
-import com.sumitinbits.vartahub.iam.api.dto.UserDto;
-import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
+import com.sumitinbits.vartahub.iam.api.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +46,7 @@ public class IamController {
     }
 
     @GetMapping("/users/onboard/status")
-    public OnboardingStatus onboardUser() {
+    public OnboardingStatusDto onboardUser() {
         log.info("API: onboard status");
         return userService.getUserOnboardingStatus();
     }

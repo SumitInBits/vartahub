@@ -82,7 +82,7 @@ public class KeycloakServiceImpl implements KeycloakService {
 
         List<RoleRepresentation> roleRepresentations = roles.stream()
                 .map(role -> realm.roles()
-                        .get(role.name())
+                        .get(role.name().toLowerCase())
                         .toRepresentation()
                 )
                 .toList();
