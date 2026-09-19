@@ -1,5 +1,6 @@
 package com.sumitinbits.vartahub.meeting.app.service.impl;
 
+import com.sumitinbits.vartahub.commons.dto.MeetingSummaryDto;
 import com.sumitinbits.vartahub.commons.exception.ResourceNotFound;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
 import com.sumitinbits.vartahub.iam.securitycore.util.AuthenticationUtil;
@@ -8,12 +9,16 @@ import com.sumitinbits.vartahub.meeting.api.dto.MatchedMeetingDto;
 import com.sumitinbits.vartahub.meeting.api.dto.MeetingDto;
 import com.sumitinbits.vartahub.meeting.api.enums.MeetingParticipantStatus;
 import com.sumitinbits.vartahub.meeting.api.enums.MeetingType;
+import com.sumitinbits.vartahub.meeting.api.enums.ProposalStatus;
 import com.sumitinbits.vartahub.meeting.app.client.IamServiceClient;
 import com.sumitinbits.vartahub.meeting.app.mapper.MeetingMapper;
 import com.sumitinbits.vartahub.meeting.app.model.MeetingDbo;
 import com.sumitinbits.vartahub.meeting.app.model.ScheduledMeetingDbo;
 import com.sumitinbits.vartahub.meeting.app.model.ScheduledMeetingParticipantDbo;
+import com.sumitinbits.vartahub.meeting.app.model.TimeSlotProposalDbo;
+import com.sumitinbits.vartahub.meeting.app.model.projection.MeetingSummary;
 import com.sumitinbits.vartahub.meeting.app.repository.MeetingRepository;
+import com.sumitinbits.vartahub.meeting.app.repository.ScheduledMeetingParticipantRepository;
 import com.sumitinbits.vartahub.meeting.app.repository.ScheduledMeetingRepository;
 import com.sumitinbits.vartahub.meeting.app.service.MeetingMatchingService;
 import com.sumitinbits.vartahub.meeting.app.service.MeetingService;
@@ -25,14 +30,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MeetingServiceImpl implements MeetingService {
     private final MeetingMatchingService meetingMatchingService;
     private final MeetingRepository meetingRepository;
+    private final ScheduledMeetingParticipantRepository scheduledMeetingParticipantRepository;
     private final ScheduledMeetingRepository scheduledMeetingRepository;
     private final IamServiceClient iamServiceClient;
     private final MeetingMapper meetingRequestMapper;
@@ -42,7 +51,14 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     public void scheduleMeeting(CreateMeetingRequest createMeetingRequest) {
         UserDto userDto = getUser();
+        TimeSlotProposalDbo timeSlotProposalDbo = new TimeSlotProposalDbo(
+                createMeetingRequest.startTime(),
+                createMeetingRequest.endTime(),
+                ProposalStatus.PROPOSED
+        );
+
         MeetingDbo meetingDbo = meetingRequestMapper.toDbo(createMeetingRequest, userDto.id());
+        meetingDbo.addTimeSlotProposal(timeSlotProposalDbo);
         meetingRepository.save(meetingDbo);
 
         if(meetingDbo.getType() == MeetingType.USER) {
@@ -67,31 +83,50 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
 
-    private void createMeeting(MatchedMeetingDto matchedMeetingDto) {
-        Set<UUID> meetingRequestIds = matchedMeetingDto.meetingRequestIds();
-        List<MeetingDbo> meetingDbos = meetingRepository.findAllById(meetingRequestIds);
+    private void createMeeting(MatchedMeetingDto dto) {
+        Set<UUID> meetingRequestIds = dto.meetingRequestIds();
 
-        List<ScheduledMeetingParticipantDbo> scheduledMeetingParticipantDbos = meetingDbos.stream()
-                .map(meetingRequestDbo -> {
-                 ScheduledMeetingParticipantDbo scheduledMeetingParticipantDbo = new ScheduledMeetingParticipantDbo();
-                 scheduledMeetingParticipantDbo.setUserId(scheduledMeetingParticipantDbo.getId());
-                 scheduledMeetingParticipantDbo.setMeetingParticipantStatus(MeetingParticipantStatus.PENDING);
-                 return scheduledMeetingParticipantDbo;
-                }).toList();
+        List<MeetingDbo> meetingDbos =
+                meetingRepository.findAllById(meetingRequestIds);
 
-        ScheduledMeetingDbo scheduledMeetingDbo = ScheduledMeetingDbo.builder()
-                .startTime(matchedMeetingDto.startTime())
-                .endTime(matchedMeetingDto.endTime())
-                .specialisationId(matchedMeetingDto.specialisationId())
-                .build();
+        ScheduledMeetingDbo scheduledMeeting =
+                ScheduledMeetingDbo.builder()
+                        .startTime(dto.startTime())
+                        .endTime(dto.endTime())
+                        .specialisationId(dto.specialisationId())
+                        .build();
 
-        scheduledMeetingDbo.setParticipants(scheduledMeetingParticipantDbos);
-        scheduledMeetingDbo.setMeetings(meetingDbos);
-        scheduledMeetingRepository.save(scheduledMeetingDbo);
+        for (MeetingDbo meetingDbo : meetingDbos) {
+
+            ScheduledMeetingParticipantDbo participant =
+                    ScheduledMeetingParticipantDbo.builder()
+                            .userId(meetingDbo.getUserId())
+                            .meetingParticipantStatus(MeetingParticipantStatus.PENDING)
+                            .build();
+
+            scheduledMeeting.addParticipant(participant);
+            meetingDbo.setScheduledMeeting(scheduledMeeting);
+        }
+        scheduledMeetingRepository.save(scheduledMeeting);
+        meetingRepository.saveAll(meetingDbos);
     }
 
     private UserDto getUser() {
         UUID identityId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
         return iamServiceClient.getUserByIdentityId(identityId);
+    }
+
+    @Override
+    public Map<UUID, MeetingSummaryDto> getUserMeetingsSummary(Set<UUID> userIds) {
+       List<MeetingSummary> meetingSummaryDbos =
+               scheduledMeetingParticipantRepository.findScheduledMeetingParticipantSummary(userIds);
+
+       return meetingSummaryDbos.stream()
+                .collect(Collectors.toMap(
+                                MeetingSummary::getUserId,
+                                meetingRequestMapper::toUserMeetingSummaryDto
+                        )
+                );
+
     }
 }

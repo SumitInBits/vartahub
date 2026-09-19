@@ -3,7 +3,10 @@ package com.sumitinbits.iam.vartahub.app.service;
 import com.sumitinbits.vartahub.iam.api.dto.OnboardUserRequest;
 import com.sumitinbits.vartahub.iam.api.dto.OnboardingStatusDto;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.util.Set;
 import java.util.UUID;
 
 public interface UserService {
@@ -16,4 +19,6 @@ public interface UserService {
     UserDto getUser();
 
     OnboardingStatusDto getUserOnboardingStatus();
+
+    Page<UserDto> getInstructors(Set<UUID> specialisationIds, Integer minExperienceYears, Pageable pageable);
 }

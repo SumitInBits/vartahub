@@ -2,6 +2,7 @@ package com.sumitinbits.vartahub.iam.api.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sumitinbits.vartahub.commons.dto.MeetingSummaryDto;
 import com.sumitinbits.vartahub.iam.api.enums.Experience;
 import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
 import com.sumitinbits.vartahub.iam.api.enums.Role;
@@ -24,6 +25,7 @@ public record UserDto(
         Integer experienceYears,
         String organizationName,
         String organizationRole,
+        MeetingSummaryDto meetingSummary,
         List<UserSpecialisationDto> userSpecialisations
 ) {
 }

@@ -1,26 +1,37 @@
 package com.sumitinbits.vartahub.meeting.app.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-
 
 @Entity
 @Table(
         name = "scheduled_meeting_feedbacks",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_scheduled_meeting_feedback", columnNames = {"from_participant_id", "to_participant_id"})
+                @UniqueConstraint(
+                        name = "uk_scheduled_meeting_feedback",
+                        columnNames = {
+                                "from_participant_id",
+                                "to_participant_id"
+                        }
+                )
+        },
+        indexes = {
+                @Index(name = "feedback_from_participant_idx", columnList = "from_participant_id"),
+                @Index(name = "feedback_to_participant_idx", columnList = "to_participant_id")
         }
 )
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(
+        callSuper = true,
+        onlyExplicitlyIncluded = true
+)
 public class ScheduledMeetingFeedbackDbo extends BaseEntity {
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "from_participant_id", nullable = false)
     private ScheduledMeetingParticipantDbo fromParticipant;

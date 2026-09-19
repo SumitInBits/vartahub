@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,37 +13,31 @@ import java.util.UUID;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_scheduled_meeting_participant",
-                        columnNames = {"scheduled_meeting_id", "user_id"}
+                        columnNames = {
+                                "scheduled_meeting_id",
+                                "user_id"
+                        }
                 )
+        },
+        indexes = {
+                @Index(name = "scheduled_meeting_participant_meeting_idx", columnList = "scheduled_meeting_id"),
+                @Index(name = "scheduled_meeting_participant_user_idx", columnList = "user_id")
         }
 )
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(
+        callSuper = true,
+        onlyExplicitlyIncluded = true
+)
 public class ScheduledMeetingParticipantDbo extends BaseEntity {
-
-    @Column(name = "user_id", nullable = false)
+    @Column(nullable = false)
     private UUID userId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "scheduled_meeting_id", nullable = false)
-    private ScheduledMeetingDbo scheduledMeeting;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private MeetingParticipantStatus meetingParticipantStatus;
-
-    @OneToMany(
-            mappedBy = "toParticipant",
-            cascade = CascadeType.ALL
-    )
-    @Builder.Default
-    private List<ScheduledMeetingFeedbackDbo> feedbacks = new ArrayList<>();
-
-    public void addFeedback(ScheduledMeetingFeedbackDbo feedback) {
-        feedbacks.add(feedback);
-        feedback.setToParticipant(this);
-    }
 }

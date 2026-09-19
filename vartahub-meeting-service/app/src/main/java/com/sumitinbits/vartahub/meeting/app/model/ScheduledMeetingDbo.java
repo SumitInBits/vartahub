@@ -13,44 +13,41 @@ import java.util.UUID;
 @Table(
         name = "scheduled_meetings",
         indexes = {
-                @Index(name = "scheduled_meetings_specialisation_idx", columnList = "specialisation_id"),
+                @Index(name = "scheduled_meeting_specialisation_idx", columnList = "specialisation_id"),
+                @Index(name = "scheduled_meeting_start_time_idx", columnList = "start_time")
         }
 )
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class ScheduledMeetingDbo extends BaseEntity {
     @Column(nullable = false)
     private UUID specialisationId;
 
+    @Column(nullable = false)
     private Instant startTime;
 
+    @Column(nullable = false)
     private Instant endTime;
 
-    @OneToMany(mappedBy = "scheduledMeeting", fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<MeetingDbo> meetings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "scheduledMeeting", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Builder.Default
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "scheduled_meeting_participant_id", nullable = false)
     private List<ScheduledMeetingParticipantDbo> participants = new ArrayList<>();
 
-    public void addMeetingRequest(List<MeetingDbo> meetingDbos) {
-        this.meetings.addAll(meetingDbos);
-        meetingDbos.forEach(meetingDbo -> meetingDbo.setScheduledMeeting(this));
-    }
-
-    public void addParticipant(ScheduledMeetingParticipantDbo participant) {
+    public void addParticipant(ScheduledMeetingParticipantDbo participant
+    ) {
         participants.add(participant);
-        participant.setScheduledMeeting(this);
     }
 
-    public void addParticipants(List<ScheduledMeetingParticipantDbo> participants) {
-        this.participants.addAll(participants);
-        participants.forEach(scheduledMeetingParticipantDbo ->
-                scheduledMeetingParticipantDbo.setScheduledMeeting(this)
-        );
+    public void removeParticipant(ScheduledMeetingParticipantDbo participant
+    ) {
+        participants.remove(participant);
     }
 }

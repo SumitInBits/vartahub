@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface MeetingRepository extends JpaRepository<MeetingDbo, UUID> {
     Page<MeetingDbo> findAllByUserId(UUID userId, Pageable pageable);
+
 }

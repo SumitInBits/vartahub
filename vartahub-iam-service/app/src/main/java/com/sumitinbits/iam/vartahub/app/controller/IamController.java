@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -32,8 +33,7 @@ public class IamController {
 
     @GetMapping("/specialisations")
     public Page<SpecialisationDto> getSpecialisations(
-            @PageableDefault(sort = "creationDate", direction = Sort.Direction.ASC)
-            Pageable pageable
+            @PageableDefault(sort = "creationDate", direction = Sort.Direction.ASC)  Pageable pageable
     ) {
         log.info("API: get specialisations");
         return specialisationService.getSpecialisations(pageable);
@@ -55,5 +55,14 @@ public class IamController {
     public UserDto getUser() {
         log.info("API: get user by context");
         return userService.getUser();
+    }
+
+    @GetMapping("/users/instructor")
+    public Page<UserDto> getInstructor(
+            @RequestParam(required = false) Set<UUID> specialisationIds,
+            @RequestParam(required = false) Integer minExperienceYears,
+            @PageableDefault(sort = "creationDate", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return userService.getInstructors(specialisationIds, minExperienceYears, pageable);
     }
 }
