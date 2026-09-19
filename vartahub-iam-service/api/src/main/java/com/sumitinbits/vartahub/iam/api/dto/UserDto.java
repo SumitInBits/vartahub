@@ -4,6 +4,7 @@ package com.sumitinbits.vartahub.iam.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sumitinbits.vartahub.iam.api.enums.Experience;
 import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
+import com.sumitinbits.vartahub.iam.api.enums.Role;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public record UserDto(
         UUID identityProviderId,
         Experience experience,
         OnboardingStatus onboardingStatus,
+        Role role,
         Integer experienceYears,
         String organizationName,
         String organizationRole,

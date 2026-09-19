@@ -15,7 +15,6 @@ import com.sumitinbits.vartahub.iam.api.dto.OnboardingStatusDto;
 import com.sumitinbits.vartahub.iam.api.dto.UserDto;
 import com.sumitinbits.vartahub.iam.api.dto.UserSpecialisationRequest;
 import com.sumitinbits.vartahub.iam.api.enums.OnboardingStatus;
-import com.sumitinbits.vartahub.iam.api.enums.Role;
 import com.sumitinbits.vartahub.iam.securitycore.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -37,7 +35,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public UUID onboardUser(OnboardUserRequest onboardUserRequest) {
-        List<Role> roles = getRoles(onboardUserRequest.role());
         Set<UUID> requestSpecialisationIds = onboardUserRequest.specialisations().stream()
                 .map(UserSpecialisationRequest::specialisationId)
                 .collect(Collectors.toSet());
@@ -74,13 +71,14 @@ public class UserServiceImpl implements UserService {
                         userSpecialisation.proficiency()
                 )).toList();
 
-        identityService.assignRealmRole(keycloakId, roles);
+        identityService.assignRealmRole(keycloakId, List.of(onboardUserRequest.role()));
         onboardingUser.setUserSpecialisations(userSpecialisations);
         onboardingUser.setOrganizationRole(onboardUserRequest.organizationRole());
         onboardingUser.setExperience(onboardUserRequest.experience());
         onboardingUser.setExperienceYears(onboardUserRequest.experienceYears());
         onboardingUser.setOrganizationName(onboardUserRequest.organizationName());
         onboardingUser.setKeycloakId(keycloakId);
+        onboardingUser.setRole(onboardUserRequest.role());
         onboardingUser.setOnboardingStatus(OnboardingStatus.COMPLETED);
         return userRepository.save(onboardingUser).getId();
     }
@@ -114,13 +112,5 @@ public class UserServiceImpl implements UserService {
                 .orElse(OnboardingStatus.PENDING);
 
         return new OnboardingStatusDto(keycloakId, onboardingStatus);
-    }
-
-    private List<Role> getRoles(String requestedRole) {
-        return switch (requestedRole.toUpperCase()) {
-            case "USER" -> List.of(Role.USER);
-            case "INSTRUCTOR" -> List.of(Role.INSTRUCTOR);
-            default -> throw new UnsupportedOperationException("Unsupported role: " + requestedRole);
-        };
     }
 }

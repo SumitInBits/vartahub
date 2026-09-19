@@ -15,7 +15,8 @@ import java.util.UUID;
 @Entity
 @Table(
         name = "users", indexes = {
-        @Index(name = "users_keycloak_id_idx", columnList = "keycloak_id")
+        @Index(name = "users_keycloak_id_idx", columnList = "keycloak_id"),
+        @Index(name = "users_role_idx", columnList = "role")
 })
 @Data
 @NoArgsConstructor
@@ -46,6 +47,10 @@ public class UserDbo extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OnboardingStatus onboardingStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     private Integer experienceYears;
 

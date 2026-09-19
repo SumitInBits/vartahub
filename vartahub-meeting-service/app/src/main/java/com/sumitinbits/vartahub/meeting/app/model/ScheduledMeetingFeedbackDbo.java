@@ -29,6 +29,8 @@ public class ScheduledMeetingFeedbackDbo extends BaseEntity {
     @JoinColumn(name = "to_participant_id", nullable = false)
     private ScheduledMeetingParticipantDbo toParticipant;
 
+    private Integer rating;
+
     @Column(length = 2000)
-    private String feedback;
+    private String comment;
 }
