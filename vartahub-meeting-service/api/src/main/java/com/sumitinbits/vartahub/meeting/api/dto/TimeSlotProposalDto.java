@@ -1,11 +1,12 @@
 package com.sumitinbits.vartahub.meeting.api.dto;
 
-import java.time.Instant;
-import java.util.List;
+import com.sumitinbits.vartahub.meeting.api.enums.ProposalStatus;
 
-public record ScheduledMeetingDto(
+import java.time.Instant;
+
+public record TimeSlotProposalDto(
     Instant startTime,
     Instant endTime,
-    List<ScheduledMeetingParticipantDto> participants
+    ProposalStatus status
 ) {
 }

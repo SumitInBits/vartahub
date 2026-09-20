@@ -46,7 +46,7 @@ public class UserDbo extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OnboardingStatus onboardingStatus;
+    private OnboardingStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

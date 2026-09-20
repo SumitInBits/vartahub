@@ -18,10 +18,6 @@ import java.util.UUID;
                                 "user_id"
                         }
                 )
-        },
-        indexes = {
-                @Index(name = "scheduled_meeting_participant_meeting_idx", columnList = "scheduled_meeting_id"),
-                @Index(name = "scheduled_meeting_participant_user_idx", columnList = "user_id")
         }
 )
 @Getter
@@ -39,5 +35,5 @@ public class ScheduledMeetingParticipantDbo extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private MeetingParticipantStatus meetingParticipantStatus;
+    private MeetingParticipantStatus status;
 }

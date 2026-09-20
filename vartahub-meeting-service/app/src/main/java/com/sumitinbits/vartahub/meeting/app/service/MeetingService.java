@@ -1,18 +1,17 @@
 package com.sumitinbits.vartahub.meeting.app.service;
 
 import com.sumitinbits.vartahub.commons.dto.MeetingSummaryDto;
-import com.sumitinbits.vartahub.meeting.api.dto.CreateMeetingRequest;
+import com.sumitinbits.vartahub.meeting.api.dto.MeetingRequest;
 import com.sumitinbits.vartahub.meeting.api.dto.MeetingDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public interface MeetingService {
-    void scheduleMeeting(CreateMeetingRequest createMeetingRequest);
+    void scheduleMeeting(MeetingRequest meetingRequest);
 
     Page<MeetingDto> getMeetings(Pageable pageable);
 

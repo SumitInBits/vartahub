@@ -15,13 +15,11 @@ public interface ScheduledMeetingParticipantRepository extends JpaRepository<Sch
     @Query("""
         SELECT
             p.userId AS userId,
-            COUNT(p) AS totalMeetingsAttended,
-            (
-                SELECT AVG(f.rating)
-                FROM ScheduledMeetingFeedbackDbo f
-                WHERE f.toParticipant = p
-            ) AS averageRating
+            COUNT(DISTINCT p.id) AS totalMeetingsAttended,
+            AVG(f.rating) AS averageRating
         FROM ScheduledMeetingParticipantDbo p
+        LEFT JOIN ScheduledMeetingFeedbackDbo f
+            ON f.toParticipant = p
         WHERE p.userId IN :userIds
         GROUP BY p.userId
         """)

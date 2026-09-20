@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public record OnboardingStatusDto(
         UUID keycloakId,
-        OnboardingStatus onboardingStatus
+        OnboardingStatus status
 ) {
 }

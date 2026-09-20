@@ -33,11 +33,8 @@ public class ScheduledMeetingDbo extends BaseEntity {
     @Column(nullable = false)
     private Instant endTime;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "scheduled_meeting_participant_id", nullable = false)
     private List<ScheduledMeetingParticipantDbo> participants = new ArrayList<>();
 

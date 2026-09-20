@@ -55,7 +55,7 @@ public class MeetingDbo extends BaseEntity {
     /**
      * The actual scheduled meeting created from this meeting request.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "scheduled_meeting_id")
     private ScheduledMeetingDbo scheduledMeeting;
 

@@ -1,6 +1,6 @@
 package com.sumitinbits.vartahub.meeting.app.controller;
 
-import com.sumitinbits.vartahub.meeting.api.dto.CreateMeetingRequest;
+import com.sumitinbits.vartahub.meeting.api.dto.MeetingRequest;
 import com.sumitinbits.vartahub.meeting.api.dto.MeetingDto;
 import com.sumitinbits.vartahub.meeting.app.service.MeetingService;
 import jakarta.validation.Valid;
@@ -18,10 +18,11 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     @PostMapping
-    public void scheduleMeeting(@Valid @RequestBody CreateMeetingRequest createMeetingRequest) {
-        meetingService.scheduleMeeting(createMeetingRequest);
+    public void scheduleMeeting(@Valid @RequestBody MeetingRequest meetingRequest) {
+        meetingService.scheduleMeeting(meetingRequest);
     }
 
+    @GetMapping
     public Page<MeetingDto> getMeetings(
             @PageableDefault(sort = "creationDate", direction = Sort.Direction.ASC)
             Pageable pageable

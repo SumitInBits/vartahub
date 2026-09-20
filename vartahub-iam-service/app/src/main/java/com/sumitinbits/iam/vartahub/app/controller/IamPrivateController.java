@@ -18,8 +18,9 @@ import java.util.UUID;
 public class IamPrivateController {
     private final UserService userService;
 
-    @GetMapping("/users/{identityId}")
-    UserDto getUserByIdentityId(@PathVariable UUID identityId) {
-        return userService.getUserByIdentityUnsafe(identityId);
+    @GetMapping("/users/{keycloakId}")
+    UserDto getUserByKeycloakId(@PathVariable UUID keycloakId) {
+        log.info("Private API [GET]: getUserByKeycloakId");
+        return userService.getUserByIdentityUnsafe(keycloakId);
     }
 }

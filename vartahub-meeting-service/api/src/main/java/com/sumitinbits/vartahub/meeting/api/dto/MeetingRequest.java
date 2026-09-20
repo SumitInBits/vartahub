@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.UUID;
 
-public record CreateMeetingRequest(
+public record MeetingRequest(
         @NotNull Instant startTime,
         @NotNull Instant endTime,
         @NotNull UUID specialisationId,

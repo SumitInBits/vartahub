@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @HttpExchange("/api/v1/private/iam")
 public interface IamServiceClient {
-    @GetExchange("/users/{identityId}")
-    UserDto getUserByIdentityId(@PathVariable UUID identityId);
+    @GetExchange("/users/{keycloakId}")
+    UserDto getUserByKeycloakId(@PathVariable UUID keycloakId);
 }

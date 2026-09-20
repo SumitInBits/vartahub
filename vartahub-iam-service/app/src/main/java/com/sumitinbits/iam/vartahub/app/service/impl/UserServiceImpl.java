@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         UUID keycloakId = AuthenticationUtil.getAuthenticatedUser().keycloakId();
         Optional<UserDbo> userDbo = userRepository.findByKeycloakId(keycloakId);
 
-        if(userDbo.isPresent() && userDbo.get().getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+        if(userDbo.isPresent() && userDbo.get().getStatus() == OnboardingStatus.COMPLETED) {
             throw new OperationNotPermitted("User already completed onboarding");
         }
 
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
                     .email(userRepresentation.getEmail())
                     .username(userRepresentation.getUsername())
                     .keycloakId(UUID.fromString(userRepresentation.getId()))
-                    .onboardingStatus(OnboardingStatus.PENDING)
+                    .status(OnboardingStatus.PENDING)
                     .build();
 
         List<UserSpecialisationDbo> userSpecialisations = onboardUserRequest.specialisations().stream()
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
         onboardingUser.setOrganizationName(onboardUserRequest.organizationName());
         onboardingUser.setKeycloakId(keycloakId);
         onboardingUser.setRole(onboardUserRequest.role());
-        onboardingUser.setOnboardingStatus(OnboardingStatus.COMPLETED);
+        onboardingUser.setStatus(OnboardingStatus.COMPLETED);
         return userRepository.save(onboardingUser).getId();
     }
 

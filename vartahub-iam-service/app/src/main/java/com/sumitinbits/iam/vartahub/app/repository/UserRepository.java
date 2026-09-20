@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<UserDbo, UUID> {
     boolean existsByUsername(String username);
 
     @Query("""
-            SELECT u.onboardingStatus
+            SELECT u.status
             FROM UserDbo u
             WHERE u.keycloakId = :keycloakId
             """)

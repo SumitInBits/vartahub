@@ -20,7 +20,7 @@ public record UserDto(
         String profilePhotoKey,
         UUID identityProviderId,
         Experience experience,
-        OnboardingStatus onboardingStatus,
+        OnboardingStatus status,
         Role role,
         Integer experienceYears,
         String organizationName,
